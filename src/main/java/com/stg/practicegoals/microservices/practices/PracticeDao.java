@@ -1,4 +1,4 @@
-package com.stg.practicegoals.dao;
+package com.stg.practicegoals.microservices.practices;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import com.stg.practicegoals.model.PracticeReport;
 import com.stg.practicegoals.model.ProgressReport;
 
 @Repository
-public class PracticeReportDao {
+public class PracticeDao {
 
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
 
@@ -40,7 +40,7 @@ public class PracticeReportDao {
 					"join training_goals tg on tr.type = tg.type "	+ 
 					"join practice p on tr.practice = p.id " + 
 					"join training_type tt on tr.type = tt.id " + 
-					"group by tr.practice, tr.type";
+					"group by tr.practice, tr.type, tt.type, p.name, tg.goal";
 		GoalsReport result = namedJdbcTemplate.query(sql, new ResultSetExtractor<GoalsReport>() {
 
 			@Override
@@ -118,23 +118,4 @@ public class PracticeReportDao {
 		});
 	}
 
-	public Map<Long, String> getTrainingTypes() {
-		String sql = 
-			"SELECT training_type.id, " +
-			"    training_type.type " +
-			"FROM training_type";
-
-		return namedJdbcTemplate.query(sql, new ResultSetExtractor<Map<Long, String>>() {
-
-			@Override
-			public Map<Long, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
-				Map<Long, String> result = new HashMap<>();
-
-				while(rs.next()){
-					result.put(rs.getLong("id"), rs.getString("type"));
-				}
-				return result;
-			}
-		});
-	}
 }
